@@ -8,14 +8,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#EDEBE2;
-    --paper-raised:#F7F5EE;
-    --ink:#2A2822;
+    --paper:#ffffff;
+    --paper-raised:#ffffff;
+    --ink:#171717;
     --ink-soft:#726C5C;
-    --line:#CFC9B8;
-    --accent-hourly:#355E78;
+    --line:#e5e5e5;
+    --accent-hourly:#171717;
     --accent-hourly-soft:#DCE6EA;
-    --accent-fixed:#8B5A22;
+    --accent-fixed:#171717;
     --accent-fixed-soft:#EFE0C8;
     --danger:#9B3A3A;
     --radius:4px;
@@ -144,10 +144,7 @@
   .ledger-summary b{color:var(--ink);font-weight:600;}
 
   .day-row{padding:12px 16px;border-top:1px solid var(--line);}
-  .day-row-collapsed{padding-bottom:10px;}
   .day-row-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-  .day-open-btn{margin-left:auto;border:1px solid var(--line);background:var(--paper-raised);color:var(--ink);padding:6px 10px;border-radius:var(--radius);font-size:12px;cursor:pointer;}
-  .day-save-btn{width:100%;margin-top:10px;border:1px solid var(--accent-hourly);background:var(--paper-raised);color:var(--accent-hourly);padding:10px 12px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;}
   .day-date-input{
     font-family:'IBM Plex Mono',monospace;font-size:14px;border:1px solid var(--line);
     border-radius:var(--radius);padding:7px 8px;background:var(--paper-raised);color:var(--ink);flex-shrink:0;
@@ -170,6 +167,9 @@
     background:none;border:1px dashed var(--ink-soft);color:var(--ink);
     border-radius:var(--radius);font-size:14.5px;cursor:pointer;
   }
+  .day-row-collapsed{padding-bottom:10px;}
+  .day-open-btn{margin-left:auto;border:1px solid var(--line);background:var(--paper-raised);color:var(--ink);padding:6px 10px;border-radius:var(--radius);font-size:12px;cursor:pointer;}
+  .day-save-btn{width:100%;margin-top:10px;border:1px solid var(--accent-hourly);background:var(--paper-raised);color:var(--accent-hourly);padding:10px 12px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;}
   .day-actions{display:flex;gap:8px;padding:14px 16px 0;}
   .quick-day-btn{flex:1;padding:12px;border:1px solid var(--ink);background:var(--ink);color:var(--paper-raised);border-radius:var(--radius);font-size:14.5px;font-weight:600;cursor:pointer;}
   .day-actions .add-day-btn{flex:1;width:auto;margin:0;}
@@ -191,6 +191,60 @@
   .modal-hint{font-size:12px;color:var(--ink-soft);line-height:1.5;}
   .modal-row{display:flex;gap:8px;}
 </style>
+
+<style id="worklog-pure-grayscale">
+:root{
+  --bg:#f5f5f5 !important;
+  --paper:#ffffff !important;
+  --paper-raised:#ffffff !important;
+  --ink:#171717 !important;
+  --muted:#737373 !important;
+  --line:#e5e5e5 !important;
+  --line-strong:#d4d4d4 !important;
+  --accent-hourly:#171717 !important;
+  --accent-fixed:#171717 !important;
+}
+html,body{background:#f5f5f5!important;color:#171717!important}
+header,main{background:#f5f5f5!important}
+.card,.job-card,.panel,.section,.summary-card,
+.modal>*,.modal-card{background:#fff!important;border-color:#e5e5e5!important}
+.day-row{background:#fff!important;border-color:#e5e5e5!important}
+.day-row-collapsed,.break-row,.photo-add-tile{background:#fafafa!important}
+input,select,textarea{background:#fff!important;color:#171717!important;border-color:#d4d4d4!important}
+input:focus,select:focus,textarea:focus{
+  border-color:#171717!important;
+  box-shadow:0 0 0 2px rgba(23,23,23,.08)!important
+}
+.icon-btn,.day-open-btn,.day-quick-btn.break{
+  background:#fff!important;color:#171717!important;border-color:#d4d4d4!important
+}
+.primary-btn,.add-btn,.day-quick-btn.primary,.day-save-btn{
+  background:#171717!important;color:#fff!important;border-color:#171717!important
+}
+.field-label,.label,.muted,.hint,.meta{color:#737373!important}
+.day-hours{color:#171717!important}
+.day-delete,.break-delete{color:#737373!important}
+.bottom-nav{background:rgba(255,255,255,.97)!important;border-color:#e5e5e5!important}
+.bottom-nav button{color:#737373!important}
+.bottom-nav button.active,.bottom-nav button[aria-current="page"]{color:#171717!important}
+.bottom-nav .plus{background:#171717!important;color:#fff!important}
+.photo-add-tile{color:#737373!important;border-color:#d4d4d4!important}
+hr{border-color:#e5e5e5!important}
+a{color:#171717!important}
+.modal{background:rgba(0,0,0,.38)!important}
+
+/* Statuses are the only intentional colors. */
+.status-active,.badge-active,.status-badge.active{
+  background:#dcfce7!important;color:#166534!important
+}
+.status-done,.badge-done,.status-badge.done{
+  background:#dbeafe!important;color:#1d4ed8!important
+}
+.status-new,.badge-new,.status-badge.new{
+  background:#fef3c7!important;color:#92400e!important
+}
+</style>
+
 </head>
 <body>
 <div id="app"></div>
@@ -304,56 +358,497 @@
     jobs.forEach(function(job){
       if(job.paymentType==='hourly'){
         job.days.forEach(function(day){
+          if(!day.date) return;
+          var mins = computeDayMinutes(day);
+          if(mins<=0) return;
+          var mk = day.date.slice(0,7);
+          if(!map[mk]) map[mk] = {hoursMin:0, pay:{}};
+          map[mk].hoursMin += mins;
+          var earn = (mins/60)*(job.rate||0);
+          map[mk].pay[job.currency] = (map[mk].pay[job.currency]||0) + earn;
+        });
+      } else {
+        var dated = job.days.filter(function(d){ return !!d.date; }).map(function(d){ return d.date; }).sort();
+        if(dated.length===0) return;
+        var lastDate = dated[dated.length-1];
+        var mk2 = lastDate.slice(0,7);
+        if(!map[mk2]) map[mk2] = {hoursMin:0, pay:{}};
+        var totalMins = job.days.reduce(function(s,d){ return s+computeDayMinutes(d); },0);
+        map[mk2].hoursMin += totalMins;
+        map[mk2].pay[job.currency] = (map[mk2].pay[job.currency]||0) + (job.fixedAmount||0);
+      }
+    });
+    return map;
+  }
+  function payMapToString(payMap){
+    var keys = Object.keys(payMap);
+    if(keys.length===0) return '—';
+    return keys.map(function(c){ return formatMoney(payMap[c], c); }).join(' · ');
+  }
+  function filteredJobs(){
+    if(statusFilter==='all') return jobs;
+    return jobs.filter(function(j){ return (j.status||'active')===statusFilter; });
+  }
+
+  // ---------- photo compression (local only, no network/storage) ----------
+  function compressImage(file, maxDim, quality){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onerror = function(){ reject(reader.error); };
+      reader.onload = function(){
+        var img = new Image();
+        img.onerror = reject;
+        img.onload = function(){
+          var w=img.width, h=img.height;
+          if(w>=h && w>maxDim){ h=Math.round(h*maxDim/w); w=maxDim; }
+          else if(h>w && h>maxDim){ w=Math.round(w*maxDim/h); h=maxDim; }
+          var canvas = document.createElement('canvas');
+          canvas.width=w; canvas.height=h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img,0,0,w,h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  function handlePhotoChange(jobId, dayId, fileInput){
+    var file = fileInput.files && fileInput.files[0];
+    if(!file) return;
+    compressImage(file, 1280, 0.72).then(function(dataUrl){
+      var job = jobs.find(function(j){ return j.id===jobId; });
+      var day = job.days.find(function(d){ return d.id===dayId; });
+      if(!day.photos) day.photos = [];
+      day.photos.push(dataUrl);
+      render();
+    }).catch(function(e){
+      console.error(e);
+    });
+  }
+  function removePhoto(jobId, dayId, index){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    var day = job.days.find(function(d){ return d.id===dayId; });
+    day.photos.splice(index,1);
+    render();
+  }
+
+  // ---------- mutations ----------
+  function localToday(){
+    var d = new Date();
+    return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+  }
+
+  function currentTime(){
+    var d = new Date();
+    return pad2(d.getHours())+':'+pad2(d.getMinutes());
+  }
+
+  function normalizeDay(day){
+    if(!Array.isArray(day.breaks)){
+      day.breaks = [];
+      if(day.breakStart || day.breakEnd){
+        day.breaks.push({id:uid('b'), type:'break', start:day.breakStart||'', end:day.breakEnd||''});
+      }
+    }
+    if(typeof day.collapsed!=='boolean') day.collapsed=false;
+    delete day.breakStart;
+    delete day.breakEnd;
+    return day;
+  }
+
+  function addDay(jobId){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    if(!job) return;
+    job.days.forEach(function(d){ normalizeDay(d); d.collapsed=true; });
+    var nextDate = localToday();
+    var dated = job.days.map(function(d){ return d.date; }).filter(Boolean).sort();
+    if(dated.length){
+      var last = new Date(dated[dated.length-1]+'T12:00:00');
+      last.setDate(last.getDate()+1);
+      nextDate = last.getFullYear()+'-'+pad2(last.getMonth()+1)+'-'+pad2(last.getDate());
+    }
+    job.days.push({id:uid('d'),date:nextDate,start:'',end:'',breaks:[],photos:[],collapsed:false});
+    render();
+  }
+
+  function saveDay(jobId, dayId){
+    var job=jobs.find(function(j){return j.id===jobId;}); if(!job) return;
+    var day=job.days.find(function(d){return d.id===dayId;}); if(!day) return;
+    normalizeDay(day); day.collapsed=true; render();
+  }
+  function openDay(jobId, dayId){
+    var job=jobs.find(function(j){return j.id===jobId;}); if(!job) return;
+    job.days.forEach(function(d){normalizeDay(d); d.collapsed=true;});
+    var day=job.days.find(function(d){return d.id===dayId;}); if(!day) return;
+    day.collapsed=false; render();
+  }
+
+  function addTodayQuick(jobId){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    job.days.forEach(normalizeDay);
+    var today = localToday();
+    var day = job.days.find(function(d){ return d.date===today; });
+    if(!day){
+      day = {id:uid('d'), date:today, start:currentTime(), end:'', breaks:[], photos:[]};
+      job.days.push(day);
+    } else if(!day.start){
+      day.start=currentTime();
+    }
+    render();
+  }
+
+  function startDay(jobId, dayId){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    var day = job.days.find(function(d){ return d.id===dayId; });
+    normalizeDay(day);
+    if(!day.start) day.start=currentTime();
+    render();
+  }
+
+  function endDay(jobId, dayId){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    var day = job.days.find(function(d){ return d.id===dayId; });
+    normalizeDay(day);
+    if(!day.end) day.end=currentTime();
+    render();
+  }
+
+  function addBreak(jobId, dayId, type){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    var day = job.days.find(function(d){ return d.id===dayId; });
+    normalizeDay(day);
+    day.breaks.push({id:uid('b'), type:type||'break', start:currentTime(), end:''});
+    render();
+  }
+
+  function finishBreak(jobId, dayId, breakId){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    var day = job.days.find(function(d){ return d.id===dayId; });
+    normalizeDay(day);
+    var br = day.breaks.find(function(b){ return b.id===breakId; });
+    if(br && !br.end) br.end=currentTime();
+    render();
+  }
+
+  function deleteBreak(jobId, dayId, breakId){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    var day = job.days.find(function(d){ return d.id===dayId; });
+    normalizeDay(day);
+    day.breaks = day.breaks.filter(function(b){ return b.id!==breakId; });
+    render();
+  }
+  function updateDayField(jobId, dayId, field, value){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    var day = job.days.find(function(d){ return d.id===dayId; });
+    day[field] = value;
+    render();
+  }
+  function deleteDay(jobId, dayId){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    job.days = job.days.filter(function(d){ return d.id!==dayId; });
+    render();
+  }
+  function toggleJobStatus(jobId){
+    var job = jobs.find(function(j){ return j.id===jobId; });
+    job.status = (job.status==='done') ? 'active' : 'done';
+    render();
+  }
+  function deleteJobById(jobId){
+    jobs = jobs.filter(function(j){ return j.id!==jobId; });
+    view='list'; currentJobId=null; confirmDeleteJobId=null;
+    render();
+  }
+  function handleJobFormSubmit(e, existingId){
+    e.preventDefault();
+    var form = e.target;
+    var fd = new FormData(form);
+    var location = (fd.get('location')||'').trim();
+    if(!location){
+      var field = form.querySelector('input[name="location"]').closest('.field');
+      var err = field.querySelector('.field-error');
+      if(!err){
+        err = document.createElement('div');
+        err.className = 'field-error';
+        field.appendChild(err);
+      }
+      err.textContent = 'Укажите объект или локацию.';
+      return;
+    }
+    var customer1 = { name:(fd.get('cust1name')||'').trim(), phone:(fd.get('cust1phone')||'').trim() };
+    var c2n = (fd.get('cust2name')||'').trim(), c2p = (fd.get('cust2phone')||'').trim();
+    var customer2 = (c2n || c2p) ? {name:c2n, phone:c2p} : null;
+    var paymentType = fd.get('paymentType') || 'hourly';
+    var rate = parseFloat(fd.get('rate')) || 0;
+    var fixedAmount = parseFloat(fd.get('fixedAmount')) || 0;
+    var currency = fd.get('currency') || 'BYN';
+
+    if(existingId){
+      var job = jobs.find(function(j){ return j.id===existingId; });
+      job.location=location; job.customer1=customer1; job.customer2=customer2;
+      job.paymentType=paymentType; job.rate=rate; job.fixedAmount=fixedAmount; job.currency=currency;
+      editingJob=false; view='detail'; currentJobId=job.id;
+    } else {
+      var newJob = {id:uid('j'), createdAt:Date.now(), location:location, customer1:customer1, customer2:customer2,
+        paymentType:paymentType, rate:rate, fixedAmount:fixedAmount, currency:currency, status:'active', days:[]};
+      jobs.unshift(newJob);
+      view='detail'; currentJobId=newJob.id;
+    }
+    render();
+  }
+
+  // ---------- export / import ----------
+  function exportData(){
+    var dataStr = JSON.stringify(jobs);
+    try {
+      var blob = new Blob([dataStr], {type:'application/json'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      var d = new Date();
+      a.download = 'naryady-'+d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())+'.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    } catch(e){ console.error(e); }
+    exportModalText = dataStr;
+    render();
+  }
+  function applyImportedJson(text){
+    try {
+      var imported = JSON.parse(text);
+      if(!Array.isArray(imported)) throw new Error('bad format');
+      imported.forEach(function(importedJob){
+        if(!importedJob || !importedJob.id) return;
+        var idx = jobs.findIndex(function(j){ return j.id===importedJob.id; });
+        if(idx>=0) jobs[idx] = importedJob; else jobs.unshift(importedJob);
+      });
+      jobs.sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); });
+      importError = null;
+      showImportPaste = false;
+    } catch(e){
+      importError = 'Не удалось прочитать файл — убедитесь, что это резервная копия из этого приложения.';
+    }
+    render();
+  }
+  function importFromFile(fileInput){
+    var file = fileInput.files && fileInput.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){ applyImportedJson(String(reader.result)); };
+    reader.onerror = function(){ importError = 'Не удалось прочитать файл.'; render(); };
+    reader.readAsText(file);
+  }
+
+  // ---------- render ----------
+  function renderStorageNotice(){
+    var html = '<div class="storage-notice">';
+    if(localStorageOk){
+      html += 'Данные автоматически сохраняются в этом браузере. «Экспорт» — для резервной копии или переноса на другое устройство.';
+    } else {
+      html += 'Автосохранение в память браузера здесь недоступно — данные хранятся, пока открыта эта вкладка. Периодически нажимайте «Экспорт» и сохраняйте файл, а при следующем открытии загружайте его через «Импорт».';
+    }
+    html += '<div class="storage-actions">';
+    html += '<button class="notice-btn" id="export-btn">Экспорт данных</button>';
+    html += '<label class="notice-btn" style="cursor:pointer;">Импорт из файла<input type="file" id="import-file-input" accept="application/json,.json" hidden></label>';
+    html += '</div>';
+    html += '<button class="link-btn" id="toggle-import-paste" style="margin-top:8px;">'+(showImportPaste?'Скрыть поле вставки':'Или вставить текст резервной копии')+'</button>';
+    if(showImportPaste){
+      html += '<div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">';
+      html += '<textarea id="import-paste-area" placeholder="Вставьте сюда содержимое резервного файла"></textarea>';
+      html += '<button class="notice-btn" id="import-paste-btn">Загрузить из текста</button>';
+      html += '</div>';
+    }
+    if(importError) html += '<div class="import-error">'+esc(importError)+'</div>';
+    html += '</div>';
+    return html;
+  }
+  function renderExportModal(){
+    if(exportModalText===null) return '';
+    var html = '<div class="modal-overlay" id="export-modal-overlay">';
+    html += '<div class="modal-box">';
+    html += '<div class="modal-title">Резервная копия данных</div>';
+    html += '<div class="modal-hint">Если скачивание файла не началось автоматически — выделите текст ниже и сохраните его (например, в заметки), чтобы восстановить данные позже через «Импорт».</div>';
+    html += '<textarea id="export-textarea" readonly>'+esc(exportModalText)+'</textarea>';
+    html += '<div class="modal-row"><button class="notice-btn" id="select-export-text">Выделить всё</button>';
+    html += '<button class="primary-btn" style="flex:1;margin-top:0;" id="close-export-modal">Закрыть</button></div>';
+    html += '</div></div>';
+    return html;
+  }
+  function renderSummaryPanel(){
+    var totals = computeMonthlyTotals();
+    var cur = totals[summaryMonth] || {hoursMin:0, pay:{}};
+    var html = '';
+    html += '<div class="summary-panel">';
+    html += '<div class="summary-header"><button class="summary-nav" id="summary-prev">‹</button>';
+    html += '<span class="summary-month-label">Сводка · '+monthLabel(summaryMonth)+'</span>';
+    html += '<button class="summary-nav" id="summary-next">›</button></div>';
+    html += '<div class="summary-body">';
+    html += '<div class="summary-stat"><span>Часов отработано</span><b>'+formatMin(cur.hoursMin)+'</b></div>';
+    html += '<div class="summary-stat"><span>Заработано</span><b>'+payMapToString(cur.pay)+'</b></div>';
+    html += '</div></div>';
+    return html;
+  }
+  function renderListView(){
+    var html = '';
+    html += '<div class="home-header">';
+    html += '<div class="home-title">Наряды</div>';
+    html += '<div class="home-subtitle">Учёт объектов, времени и оплаты</div>';
+    html += '</div>';
+    html += renderStorageNotice();
+    html += renderSummaryPanel();
+    html += '<div class="status-tabs">';
+    html += '<button class="tab-btn '+(statusFilter==='all'?'active':'')+'" data-filter="all">Все</button>';
+    html += '<button class="tab-btn '+(statusFilter==='active'?'active':'')+'" data-filter="active">В работе</button>';
+    html += '<button class="tab-btn '+(statusFilter==='done'?'active':'')+'" data-filter="done">Завершены</button>';
+    html += '</div>';
+    html += '<button class="add-job-btn" id="add-job-btn">+ Добавить наряд</button>';
+    var list = filteredJobs();
+    if(list.length===0){
+      html += '<div class="empty-state">'+(jobs.length===0
+        ? 'Пока нет ни одного наряда.<br>Добавьте первый, чтобы начать вести учёт времени и оплаты по объектам.'
+        : 'В этой категории пока пусто.')+'</div>';
+    } else {
+      html += '<div class="job-list">';
+      list.forEach(function(job){
+        var t = jobTotals(job);
+        var isDone = job.status==='done';
+        html += '<div class="job-card '+(job.paymentType==='fixed'?'fixed':'')+(isDone?' done':'')+'" data-id="'+job.id+'">';
+        html += '<div class="job-card-top">';
+        html += '<div class="job-location">'+esc(job.location)+'</div>';
+        html += '<div class="job-badges">';
+        html += '<div class="job-badge badge-'+job.paymentType+'">'+(job.paymentType==='hourly'?'Почасовая':'Фиксированная')+'</div>';
+        if(isDone) html += '<div class="job-badge badge-done">Завершён</div>';
+        html += '</div></div>';
+        html += '<div class="job-customer">'+esc(job.customer1.name||'—')+(job.customer1.phone?' · '+esc(job.customer1.phone):'')+'</div>';
+        if(job.customer2){
+          html += '<div class="job-customer">'+esc(job.customer2.name||'—')+(job.customer2.phone?' · '+esc(job.customer2.phone):'')+'</div>';
+        }
+        html += '<div class="job-divider"></div>';
+        html += '<div class="job-stats"><span>'+job.days.length+' '+pluralDays(job.days.length)+' · '+formatMin(t.totalMin)+'</span>';
+        html += '<span class="job-pay">'+formatMoney(t.pay, job.currency)+'</span></div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+    return html;
+  }
+  function renderFormView(existingJob){
+    var isEdit = !!existingJob;
+    var j = existingJob || {location:'',customer1:{name:'',phone:''},customer2:null,paymentType:'hourly',rate:'',fixedAmount:'',currency:'BYN'};
+    var html = '';
+    html += '<div class="topbar"><button class="back-btn" id="cancel-form-btn">‹ Назад</button>';
+    html += '<div class="topbar-title">'+(isEdit?'Изменить наряд':'Новый наряд')+'</div><div style="width:56px"></div></div>';
+    html += '<form id="job-form" class="form-body">';
+    html += '<label class="field"><span class="field-label">Объект / локация</span>';
+    html += '<input type="text" name="location" required placeholder="напр. ул. Ленина 12" value="'+esc(j.location)+'"></label>';
+
+    html += '<div class="field-group"><span class="field-group-title">Заказчик 1</span>';
+    html += '<label class="field"><span class="field-label">Имя</span><input type="text" name="cust1name" value="'+esc(j.customer1.name)+'" placeholder="Имя"></label>';
+    html += '<label class="field"><span class="field-label">Телефон</span><input type="tel" name="cust1phone" value="'+esc(j.customer1.phone)+'" placeholder="+375 29 000-00-00"></label>';
+    html += '</div>';
+
+    html += '<button type="button" id="toggle-cust2" class="link-btn">'+(j.customer2?'✕ Убрать второго заказчика':'+ Добавить второго заказчика')+'</button>';
+    html += '<div class="field-group" id="cust2-fields" style="display:'+(j.customer2?'flex':'none')+'">';
+    html += '<span class="field-group-title">Заказчик 2</span>';
+    html += '<label class="field"><span class="field-label">Имя</span><input type="text" name="cust2name" value="'+esc(j.customer2?j.customer2.name:'')+'" placeholder="Имя"></label>';
+    html += '<label class="field"><span class="field-label">Телефон</span><input type="tel" name="cust2phone" value="'+esc(j.customer2?j.customer2.phone:'')+'" placeholder="+375 29 000-00-00"></label>';
+    html += '</div>';
+
+    html += '<div class="field-group"><span class="field-group-title">Способ оплаты</span>';
+    html += '<div class="payment-toggle">';
+    html += '<label class="toggle-option '+(j.paymentType==='hourly'?'active':'')+'"><input type="radio" name="paymentType" value="hourly" '+(j.paymentType==='hourly'?'checked':'')+'><span>Почасовая</span></label>';
+    html += '<label class="toggle-option '+(j.paymentType==='fixed'?'active':'')+'"><input type="radio" name="paymentType" value="fixed" '+(j.paymentType==='fixed'?'checked':'')+'><span>Фиксированная</span></label>';
+    html += '</div>';
+    html += '<div class="rate-row">';
+    html += '<div id="hourly-fields" style="display:'+(j.paymentType==='hourly'?'block':'none')+';flex:1">';
+    html += '<label class="field"><span class="field-label">Ставка в час</span><input type="number" step="0.01" min="0" name="rate" value="'+(j.rate||'')+'" placeholder="0"></label></div>';
+    html += '<div id="fixed-fields" style="display:'+(j.paymentType==='fixed'?'block':'none')+';flex:1">';
+    html += '<label class="field"><span class="field-label">Сумма</span><input type="number" step="0.01" min="0" name="fixedAmount" value="'+(j.fixedAmount||'')+'" placeholder="0"></label></div>';
+    html += '<label class="field" style="width:96px"><span class="field-label">Валюта</span>'+currencySelect(j.currency)+'</label>';
+    html += '</div></div>';
+
+    html += '<button type="submit" class="primary-btn">'+(isEdit?'Сохранить изменения':'Создать наряд')+'</button>';
+    html += '</form>';
+    return html;
+  }
+  function photoTileHtml(jobId, dayId, index, dataUrl){
+    return '<div class="photo-tile"><img src="'+dataUrl+'" alt="Фото дня">'+
+      '<button class="photo-remove-x" data-job="'+jobId+'" data-day="'+dayId+'" data-index="'+index+'" title="Удалить фото">✕</button></div>';
+  }
+  function renderDetailView(job){
+    var t = jobTotals(job);
+    var isDone = job.status==='done';
+    var html = '';
+    html += '<div class="topbar"><button class="back-btn" id="back-btn">‹ Назад</button>';
+    html += '<div class="topbar-title">Наряд</div><div style="width:56px"></div></div>';
+    html += '<div class="detail-info">';
+    html += '<div class="detail-title-row"><div class="detail-title">'+esc(job.location)+'</div>';
+    if(isDone) html += '<div class="job-badge badge-done">Завершён</div>';
+    html += '</div>';
+    html += '<div class="detail-row">'+esc(job.customer1.name||'—')+(job.customer1.phone?' · <a href="tel:'+esc(job.customer1.phone)+'">'+esc(job.customer1.phone)+'</a>':'')+'</div>';
+    if(job.customer2){
+      html += '<div class="detail-row">'+esc(job.customer2.name||'—')+(job.customer2.phone?' · <a href="tel:'+esc(job.customer2.phone)+'">'+esc(job.customer2.phone)+'</a>':'')+'</div>';
+    }
+    html += '<div class="detail-payment">'+paymentLine(job)+'</div>';
+    html += '<div class="detail-actions">';
+    html += '<button class="edit-link" id="edit-job-btn">Изменить</button>';
+    html += '<button class="status-link" id="toggle-status-btn">'+(isDone?'Вернуть в работу':'Отметить как завершённый')+'</button>';
+    if(confirmDeleteJobId===job.id){
+      html += '<span style="font-size:13px;color:var(--ink-soft);">Точно удалить?</span>';
+      html += '<button class="confirm-yes" id="confirm-delete-yes">Да, удалить</button>';
+      html += '<button class="confirm-no" id="confirm-delete-no">Отмена</button>';
+    } else {
+      html += '<button class="delete-link" id="delete-job-btn">Удалить наряд</button>';
+    }
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="ledger-header"><span class="ledger-title">Дни работы</span></div>';
+    html += '<div class="ledger-summary"><span>'+job.days.length+' '+pluralDays(job.days.length)+' · <b>'+formatMin(t.totalMin)+'</b></span>';
+    html += '<span>К оплате: <b>'+formatMoney(t.pay, job.currency)+'</b></span></div>';
+
+    job.days.forEach(function(day){
+      if(!day.date) return;
       normalizeDay(day);
+      var mins=computeDayMinutes(day);
+      var hours=Math.floor(mins/60), rem=mins%60;
       html += '<div class="day-row'+(day.collapsed?' day-row-collapsed':'')+'">';
       html += '<div class="day-row-top">';
       html += '<input type="date" class="day-date-input" value="'+esc(day.date)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-field="date"'+(day.collapsed?' disabled':'')+'>';
-      html += '<span class="day-hours">'+dayHoursLabel(day)+'</span>';
-      if(day.collapsed){
-        html += '<button class="day-open-btn" data-action="open-day" data-job="'+job.id+'" data-day="'+day.id+'">Открыть</button>';
-      }
+      html += '<span class="day-hours">'+hours+' ч '+rem+' мин</span>';
+      if(day.collapsed) html += '<button class="day-open-btn" data-action="open-day" data-job="'+job.id+'" data-day="'+day.id+'">Открыть</button>';
       html += '<button class="day-delete" data-job="'+job.id+'" data-day="'+day.id+'" title="Удалить день">✕</button>';
       html += '</div>';
-
       if(!day.collapsed){
         html += '<div class="day-times-grid">';
         html += '<label><span class="field-label">Начало</span><input type="time" value="'+esc(day.start)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-field="start"></label>';
         html += '<label><span class="field-label">Конец</span><input type="time" value="'+esc(day.end)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-field="end"></label>';
         html += '</div>';
-
         html += '<div class="break-list">';
         (day.breaks||[]).forEach(function(br){
-          html += '<div class="break-row">';
-          html += '<span class="break-type">'+(br.type==='lunch'?'Обед':'Перерыв')+'</span>';
-          html += '<input type="time" value="'+esc(br.start)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+br.id+'" data-break-field="start">';
-          html += '<span>—</span>';
+          html += '<div class="break-row"><span class="break-type">'+(br.type==='lunch'?'Обед':'Перерыв')+'</span>';
+          html += '<input type="time" value="'+esc(br.start)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+br.id+'" data-break-field="start"><span>—</span>';
           html += '<input type="time" value="'+esc(br.end)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+br.id+'" data-break-field="end">';
-          html += '<button class="break-delete" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+br.id+'" title="Удалить перерыв">✕</button>';
-          html += '</div>';
+          html += '<button class="break-delete" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+br.id+'" title="Удалить перерыв">✕</button></div>';
         });
         html += '</div>';
-
         html += '<div class="day-quick-actions">';
         if(!day.start) html += '<button class="day-quick-btn primary" data-action="start" data-job="'+job.id+'" data-day="'+day.id+'">▶ Начать</button>';
         if(day.start && !day.end) html += '<button class="day-quick-btn primary" data-action="end" data-job="'+job.id+'" data-day="'+day.id+'">■ Закончить</button>';
         html += '<button class="day-quick-btn break" data-action="add-break" data-job="'+job.id+'" data-day="'+day.id+'">+ Перерыв</button>';
         html += '<button class="day-quick-btn break" data-action="add-lunch" data-job="'+job.id+'" data-day="'+day.id+'">+ Обед</button>';
-        var openBreak = (day.breaks||[]).find(function(b){ return b.start && !b.end; });
+        var openBreak=(day.breaks||[]).find(function(b){return b.start&&!b.end;});
         if(openBreak) html += '<button class="day-quick-btn primary" data-action="finish-break" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+openBreak.id+'">Продолжить работу</button>';
         html += '</div>';
-
         html += '<div class="day-photos-row">';
-        (day.photos||[]).forEach(function(dataUrl, idx){
-          html += photoTileHtml(job.id, day.id, idx, dataUrl);
-        });
-        html += '<label class="photo-add-tile" title="Добавить фото">+<input type="file" accept="image/*" class="photo-input" data-job="'+job.id+'" data-day="'+day.id+'" hidden></label>';
-        html += '</div>';
-
+        (day.photos||[]).forEach(function(dataUrl,idx){ html += photoTileHtml(job.id,day.id,idx,dataUrl); });
+        html += '<label class="photo-add-tile" title="Добавить фото">+<input type="file" accept="image/*" class="photo-input" data-job="'+job.id+'" data-day="'+day.id+'" hidden></label></div>';
         html += '<button class="day-save-btn" data-action="save-day" data-job="'+job.id+'" data-day="'+day.id+'">✓ Сохранить день</button>';
       }
       html += '</div>';
     });
-
     html += '<div class="day-actions">';
     html += '<button class="quick-day-btn" id="add-today-btn">+ Сегодня</button>';
     html += '<button class="add-day-btn" id="add-day-btn">+ Добавить другой день</button>';
@@ -513,11 +1008,8 @@
 
     document.querySelectorAll('.day-save-btn, .day-open-btn').forEach(function(btn){
       btn.addEventListener('click', function(){
-        var action = btn.getAttribute('data-action');
-        var jobId = btn.getAttribute('data-job');
-        var dayId = btn.getAttribute('data-day');
-        if(action==='save-day') saveDay(jobId, dayId);
-        else if(action==='open-day') openDay(jobId, dayId);
+        var jobId=btn.getAttribute('data-job'), dayId=btn.getAttribute('data-day');
+        if(btn.getAttribute('data-action')==='save-day') saveDay(jobId,dayId); else openDay(jobId,dayId);
       });
     });
 
