@@ -245,6 +245,14 @@ a{color:#171717!important}
 }
 </style>
 
+
+<style id="worklog-advance-ui">
+.advance-box{margin-top:4px;padding:12px;background:#fafafa;border:1px solid #e5e5e5;border-radius:8px}
+.check-row{display:flex;align-items:center;gap:8px;font-weight:600;color:#171717;cursor:pointer}
+.check-row input{width:16px;height:16px;accent-color:#171717}
+.advance-row{display:grid;grid-template-columns:1fr 1.2fr;gap:8px;margin-top:10px}
+.advance-preview{margin-top:7px;font-size:12px;color:#737373;line-height:1.4}
+</style>
 </head>
 <body>
 <div id="app"></div>
@@ -334,9 +342,22 @@ a{color:#171717!important}
     var opts = {minimumFractionDigits: (rounded%1===0)?0:2, maximumFractionDigits:2};
     return rounded.toLocaleString('ru-RU', opts) + ' ' + currency;
   }
+  function advanceAmount(job){
+    if(!job || job.paymentType!=='fixed') return 0;
+    var total = Number(job.fixedAmount)||0;
+    var value = Number(job.advanceValue)||0;
+    if(job.advanceType==='percent') return Math.min(total, Math.max(0, total*value/100));
+    return Math.min(total, Math.max(0, value));
+  }
+  function remainingAmount(job){
+    return Math.max(0, (Number(job.fixedAmount)||0) - advanceAmount(job));
+  }
   function paymentLine(job){
     if(job.paymentType==='hourly') return 'Почасовая — ' + (job.rate||0) + ' ' + job.currency + '/ч';
-    return 'Фиксированная — ' + formatMoney(job.fixedAmount||0, job.currency);
+    var total = formatMoney(job.fixedAmount||0, job.currency);
+    var adv = advanceAmount(job);
+    if(adv>0) return 'Фиксированная — ' + total + ' · Аванс ' + formatMoney(adv, job.currency) + ' · Остаток ' + formatMoney(remainingAmount(job), job.currency);
+    return 'Фиксированная — ' + total;
   }
   function currencySelect(selected){
     return '<select name="currency">' + CURRENCIES.map(function(c){
@@ -581,16 +602,21 @@ a{color:#171717!important}
     var paymentType = fd.get('paymentType') || 'hourly';
     var rate = parseFloat(fd.get('rate')) || 0;
     var fixedAmount = parseFloat(fd.get('fixedAmount')) || 0;
+    var advanceType = fd.get('advanceType') || 'amount';
+    var advanceValue = parseFloat(fd.get('advanceValue')) || 0;
     var currency = fd.get('currency') || 'BYN';
+    if(paymentType!=='fixed'){ advanceType='amount'; advanceValue=0; }
+    if(advanceType==='percent') advanceValue=Math.min(100, Math.max(0, advanceValue));
+    else advanceValue=Math.min(Math.max(0, fixedAmount), Math.max(0, advanceValue));
 
     if(existingId){
       var job = jobs.find(function(j){ return j.id===existingId; });
       job.location=location; job.customer1=customer1; job.customer2=customer2;
-      job.paymentType=paymentType; job.rate=rate; job.fixedAmount=fixedAmount; job.currency=currency;
+      job.paymentType=paymentType; job.rate=rate; job.fixedAmount=fixedAmount; job.advanceType=advanceType; job.advanceValue=advanceValue; job.currency=currency;
       editingJob=false; view='detail'; currentJobId=job.id;
     } else {
       var newJob = {id:uid('j'), createdAt:Date.now(), location:location, customer1:customer1, customer2:customer2,
-        paymentType:paymentType, rate:rate, fixedAmount:fixedAmount, currency:currency, status:'active', days:[]};
+        paymentType:paymentType, rate:rate, fixedAmount:fixedAmount, advanceType:advanceType, advanceValue:advanceValue, currency:currency, status:'active', days:[]};
       jobs.unshift(newJob);
       view='detail'; currentJobId=newJob.id;
     }
@@ -736,7 +762,7 @@ a{color:#171717!important}
   }
   function renderFormView(existingJob){
     var isEdit = !!existingJob;
-    var j = existingJob || {location:'',customer1:{name:'',phone:''},customer2:null,paymentType:'hourly',rate:'',fixedAmount:'',currency:'BYN'};
+    var j = existingJob || {location:'',customer1:{name:'',phone:''},customer2:null,paymentType:'hourly',rate:'',fixedAmount:'',advanceType:'amount',advanceValue:'',currency:'BYN'};
     var html = '';
     html += '<div class="topbar"><button class="back-btn" id="cancel-form-btn">‹ Назад</button>';
     html += '<div class="topbar-title">'+(isEdit?'Изменить наряд':'Новый наряд')+'</div><div style="width:56px"></div></div>';
@@ -765,7 +791,19 @@ a{color:#171717!important}
     html += '<div id="hourly-fields" style="display:'+(j.paymentType==='hourly'?'block':'none')+';flex:1">';
     html += '<label class="field"><span class="field-label">Ставка в час</span><input type="number" step="0.01" min="0" name="rate" value="'+(j.rate||'')+'" placeholder="0"></label></div>';
     html += '<div id="fixed-fields" style="display:'+(j.paymentType==='fixed'?'block':'none')+';flex:1">';
-    html += '<label class="field"><span class="field-label">Сумма</span><input type="number" step="0.01" min="0" name="fixedAmount" value="'+(j.fixedAmount||'')+'" placeholder="0"></label></div>';
+    html += '<label class="field"><span class="field-label">Сумма</span><input type="number" step="0.01" min="0" name="fixedAmount" value="'+(j.fixedAmount||'')+'" placeholder="0"></label>';
+    html += '<div class="advance-box">';
+    html += '<label class="check-row"><input type="checkbox" id="advance-enabled" '+((Number(j.advanceValue)||0)>0?'checked':'')+'> <span>Аванс</span></label>';
+    html += '<div id="advance-fields" style="display:'+((Number(j.advanceValue)||0)>0?'block':'none')+'">';
+    html += '<div class="advance-row">';
+    html += '<select name="advanceType" id="advance-type">';
+    html += '<option value="amount" '+((j.advanceType||'amount')==='amount'?'selected':'')+'>Сумма</option>';
+    html += '<option value="percent" '+((j.advanceType||'amount')==='percent'?'selected':'')+'>Процент</option>';
+    html += '</select>';
+    html += '<input type="number" step="0.01" min="0" name="advanceValue" id="advance-value" value="'+(j.advanceValue||'')+'" placeholder="0">';
+    html += '</div>';
+    html += '<div id="advance-preview" class="advance-preview"></div>';
+    html += '</div></div></div>';
     html += '<label class="field" style="width:96px"><span class="field-label">Валюта</span>'+currencySelect(j.currency)+'</label>';
     html += '</div></div>';
 
@@ -959,6 +997,32 @@ a{color:#171717!important}
         else { hourlyDiv.style.display='none'; fixedDiv.style.display='block'; }
       });
     });
+
+    var advanceEnabled = document.getElementById('advance-enabled');
+    var advanceFields = document.getElementById('advance-fields');
+    var advanceType = document.getElementById('advance-type');
+    var advanceValue = document.getElementById('advance-value');
+    var fixedAmountInput = document.querySelector('input[name="fixedAmount"]');
+    var advancePreview = document.getElementById('advance-preview');
+    function updateAdvanceUI(){
+      if(!advanceEnabled || !advanceFields) return;
+      advanceFields.style.display = advanceEnabled.checked ? 'block' : 'none';
+      if(!advanceEnabled.checked){ if(advanceValue) advanceValue.value=''; return; }
+      var total = parseFloat(fixedAmountInput && fixedAmountInput.value) || 0;
+      var val = parseFloat(advanceValue && advanceValue.value) || 0;
+      if(advanceType && advanceType.value==='percent'){
+        val=Math.min(100,Math.max(0,val));
+        if(advancePreview) advancePreview.textContent='Аванс: '+formatMoney(total*val/100, (document.querySelector('select[name="currency"]')||{}).value || 'BYN')+' · Остаток: '+formatMoney(Math.max(0,total-total*val/100), (document.querySelector('select[name="currency"]')||{}).value || 'BYN');
+      } else {
+        val=Math.min(Math.max(0,total),Math.max(0,val));
+        if(advancePreview) advancePreview.textContent='Аванс: '+formatMoney(val, (document.querySelector('select[name="currency"]')||{}).value || 'BYN')+' · Остаток: '+formatMoney(Math.max(0,total-val), (document.querySelector('select[name="currency"]')||{}).value || 'BYN');
+      }
+    }
+    if(advanceEnabled) advanceEnabled.addEventListener('change', updateAdvanceUI);
+    if(advanceType) advanceType.addEventListener('change', updateAdvanceUI);
+    if(advanceValue) advanceValue.addEventListener('input', updateAdvanceUI);
+    if(fixedAmountInput) fixedAmountInput.addEventListener('input', updateAdvanceUI);
+    updateAdvanceUI();
 
     var jobForm = document.getElementById('job-form');
     if(jobForm) jobForm.addEventListener('submit', function(e){
