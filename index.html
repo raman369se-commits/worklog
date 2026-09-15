@@ -351,7 +351,6 @@ a{color:#171717!important}
     payable: payable
   };
 }
-  }
   function formatMoney(n, currency){
     var rounded = Math.round(n*100)/100;
     var opts = {minimumFractionDigits: (rounded%1===0)?0:2, maximumFractionDigits:2};
@@ -633,11 +632,11 @@ var currency = fd.get('currency') || 'BYN';
     if(existingId){
       var job = jobs.find(function(j){ return j.id===existingId; });
       job.location=location; job.customer1=customer1; job.customer2=customer2;
-      job.paymentType=paymentType; job.rate=rate; job.fixedAmount=fixedAmount; job.advanceEnabled=!!advanceEnabled; job.advanceType=advanceType; job.advanceValue=advanceValue; job.currency=currency;
+      job.paymentType=paymentType; job.rate=rate; job.fixedAmount=fixedAmount; job.advanceEnabled=!!advanceEnabled; job.advanceType=advanceType; job.advanceValue=advanceValue; job.advanceReceived=!!advanceReceived; job.currency=currency;
       editingJob=false; view='detail'; currentJobId=job.id;
     } else {
       var newJob = {id:uid('j'), createdAt:Date.now(), location:location, customer1:customer1, customer2:customer2,
-        paymentType:paymentType, rate:rate, fixedAmount:fixedAmount, advanceEnabled:!!advanceEnabled, advanceType:advanceType, advanceValue:advanceValue, currency:currency, status:'active', days:[]};
+        paymentType:paymentType, rate:rate, fixedAmount:fixedAmount, advanceEnabled:!!advanceEnabled, advanceType:advanceType, advanceValue:advanceValue, advanceReceived:!!advanceReceived, currency:currency, status:'active', days:[]};
       jobs.unshift(newJob);
       view='detail'; currentJobId=newJob.id;
     }
@@ -783,7 +782,7 @@ var currency = fd.get('currency') || 'BYN';
   }
   function renderFormView(existingJob){
     var isEdit = !!existingJob;
-    var j = existingJob || {location:'',customer1:{name:'',phone:''},customer2:null,paymentType:'hourly',rate:'',fixedAmount:'',advanceEnabled:false,advanceType:'amount',advanceValue:'',currency:'BYN'};
+    var j = existingJob || {location:'',customer1:{name:'',phone:''},customer2:null,paymentType:'hourly',rate:'',fixedAmount:'',advanceEnabled:false,advanceType:'amount',advanceValue:'',advanceReceived:false,currency:'BYN'};
     var html = '';
     html += '<div class="topbar"><button class="back-btn" id="cancel-form-btn">‹ Назад</button>';
     html += '<div class="topbar-title">'+(isEdit?'Изменить наряд':'Новый наряд')+'</div><div style="width:56px"></div></div>';
