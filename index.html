@@ -253,6 +253,7 @@ a{color:#171717!important}
 .advance-row{display:grid;grid-template-columns:1fr 1.2fr;gap:8px;margin-top:10px}
 .advance-preview{margin-top:7px;font-size:12px;color:#737373;line-height:1.4}
 </style>
+<!-- WORKLOG v0.9: received-money summary, multi-currency, export/import at bottom -->
 </head>
 <body>
 <div id="app"></div>
@@ -402,15 +403,22 @@ a{color:#171717!important}
           var earn = (mins/60)*(job.rate||0);
           map[mk].pay[job.currency] = (map[mk].pay[job.currency]||0) + earn;
         });
-      } else {
-        var dated = job.days.filter(function(d){ return !!d.date; }).map(function(d){ return d.date; }).sort();
-        if(dated.length===0) return;
-        var lastDate = dated[dated.length-1];
-        var mk2 = lastDate.slice(0,7);
-        if(!map[mk2]) map[mk2] = {hoursMin:0, pay:{}};
-        var totalMins = job.days.reduce(function(s,d){ return s+computeDayMinutes(d); },0);
-        map[mk2].hoursMin += totalMins;
-        map[mk2].pay[job.currency] = (map[mk2].pay[job.currency]||0) + (job.fixedAmount||0);
+      } else if(job.advanceReceived===true){
+        // Fixed-price jobs contribute only money that was actually received.
+        // The month is determined by the date when "Аванс получен" was checked.
+        var receivedMonth = null;
+        if(job.advanceReceivedAt){
+          receivedMonth = new Date(job.advanceReceivedAt).getFullYear()+'-'+pad2(new Date(job.advanceReceivedAt).getMonth()+1);
+        } else {
+          var dated = job.days.filter(function(d){ return !!d.date; }).map(function(d){ return d.date; }).sort();
+          if(dated.length) receivedMonth = dated[dated.length-1].slice(0,7);
+        }
+        if(!receivedMonth) return;
+        if(!map[receivedMonth]) map[receivedMonth] = {hoursMin:0, pay:{}};
+        var received = advanceAmount(job);
+        if(received>0){
+          map[receivedMonth].pay[job.currency] = (map[receivedMonth].pay[job.currency]||0) + received;
+        }
       }
     });
     return map;
@@ -632,11 +640,14 @@ var currency = fd.get('currency') || 'BYN';
     if(existingId){
       var job = jobs.find(function(j){ return j.id===existingId; });
       job.location=location; job.customer1=customer1; job.customer2=customer2;
-      job.paymentType=paymentType; job.rate=rate; job.fixedAmount=fixedAmount; job.advanceEnabled=!!advanceEnabled; job.advanceType=advanceType; job.advanceValue=advanceValue; job.advanceReceived=!!advanceReceived; job.currency=currency;
+      job.paymentType=paymentType; job.rate=rate; job.fixedAmount=fixedAmount; job.advanceEnabled=!!advanceEnabled; job.advanceType=advanceType; job.advanceValue=advanceValue; job.currency=currency;
+      job.advanceReceived=!!advanceReceived;
+      if(advanceReceived && !job.advanceReceivedAt) job.advanceReceivedAt=Date.now();
+      if(!advanceReceived) job.advanceReceivedAt=null;
       editingJob=false; view='detail'; currentJobId=job.id;
     } else {
       var newJob = {id:uid('j'), createdAt:Date.now(), location:location, customer1:customer1, customer2:customer2,
-        paymentType:paymentType, rate:rate, fixedAmount:fixedAmount, advanceEnabled:!!advanceEnabled, advanceType:advanceType, advanceValue:advanceValue, advanceReceived:!!advanceReceived, currency:currency, status:'active', days:[]};
+        paymentType:paymentType, rate:rate, fixedAmount:fixedAmount, advanceEnabled:!!advanceEnabled, advanceType:advanceType, advanceValue:advanceValue, currency:currency, advanceReceived:!!advanceReceived, advanceReceivedAt:advanceReceived ? Date.now() : null, status:'active', days:[]};
       jobs.unshift(newJob);
       view='detail'; currentJobId=newJob.id;
     }
@@ -732,7 +743,7 @@ var currency = fd.get('currency') || 'BYN';
     html += '<button class="summary-nav" id="summary-next">›</button></div>';
     html += '<div class="summary-body">';
     html += '<div class="summary-stat"><span>Часов отработано</span><b>'+formatMin(cur.hoursMin)+'</b></div>';
-    html += '<div class="summary-stat"><span>Заработано</span><b>'+payMapToString(cur.pay)+'</b></div>';
+    html += '<div class="summary-stat"><span>Получено</span><b>'+payMapToString(cur.pay)+'</b></div>';
     html += '</div></div>';
     return html;
   }
@@ -742,7 +753,6 @@ var currency = fd.get('currency') || 'BYN';
     html += '<div class="home-title">Наряды</div>';
     html += '<div class="home-subtitle">Учёт объектов, времени и оплаты</div>';
     html += '</div>';
-    html += renderStorageNotice();
     html += renderSummaryPanel();
     html += '<div class="status-tabs">';
     html += '<button class="tab-btn '+(statusFilter==='all'?'active':'')+'" data-filter="all">Все</button>';
@@ -778,11 +788,12 @@ var currency = fd.get('currency') || 'BYN';
       });
       html += '</div>';
     }
+    html += renderStorageNotice();
     return html;
   }
   function renderFormView(existingJob){
     var isEdit = !!existingJob;
-    var j = existingJob || {location:'',customer1:{name:'',phone:''},customer2:null,paymentType:'hourly',rate:'',fixedAmount:'',advanceEnabled:false,advanceType:'amount',advanceValue:'',advanceReceived:false,currency:'BYN'};
+    var j = existingJob || {location:'',customer1:{name:'',phone:''},customer2:null,paymentType:'hourly',rate:'',fixedAmount:'',advanceEnabled:false,advanceType:'amount',advanceValue:'',advanceReceived:false,advanceReceivedAt:null,currency:'BYN'};
     var html = '';
     html += '<div class="topbar"><button class="back-btn" id="cancel-form-btn">‹ Назад</button>';
     html += '<div class="topbar-title">'+(isEdit?'Изменить наряд':'Новый наряд')+'</div><div style="width:56px"></div></div>';
