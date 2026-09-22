@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>WORKLOG v0.10 — учёт рабочего времени</title>
+<title>WORKLOG v0.15 — Work Time Tracking</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -254,6 +254,53 @@ a{color:#171717!important}
 .check-row input{width:16px;height:16px;accent-color:#171717}
 .advance-row{display:grid;grid-template-columns:1fr 1.2fr;gap:8px;margin-top:10px}
 .advance-preview{margin-top:7px;font-size:12px;color:#737373;line-height:1.4}
+
+.stats-panel{padding:0 16px 24px;}
+.stats-section{margin:12px 0;padding:14px;background:#fff;border:1px solid var(--line);border-radius:8px;}
+.stats-section-title{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#737373;font-weight:600;margin-bottom:10px;}
+.stats-month-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:4;}
+.stats-month-label{font-size:15px;font-weight:700;}
+.stats-nav-btn{border:0;background:none;color:#171717;font-size:24px;line-height:1;padding:2px 10px;cursor:pointer;}
+.stats-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stats-kpi{padding:12px;border:1px solid var(--line);border-radius:6px;background:#fafafa;}
+.stats-kpi span{display:block;color:#737373;font-size:11px;margin-bottom:5px;}
+.stats-kpi b{font-size:17px;line-height:1.2;}
+.stats-money-list{display:flex;flex-direction:column;gap:6px;}
+.stats-money-row{display:flex;justify-content:space-between;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:8px 0;border-bottom:1px solid #eee;}
+.stats-money-row:last-child{border-bottom:0;}
+.stats-chart{display:flex;flex-direction:column;gap:9px;}
+.stats-chart-row{display:grid;grid-template-columns:58px 1fr 70px;gap:8px;align-items:center;font-size:11px;}
+.stats-chart-label{color:#737373;}
+.stats-bar-wrap{height:12px;background:#f0f0f0;border-radius:2px;overflow:hidden;}
+.stats-bar{height:100%;background:#171717;min-width:2px;}
+.stats-chart-value{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+.stats-currency-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.stats-currency-btn{border:1px solid var(--line);background:#fff;color:#737373;border-radius:4px;padding:6px 9px;font-size:11px;cursor:pointer;}
+.stats-currency-btn.active{background:#171717;color:#fff;border-color:#171717;}
+.stats-work-types{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stats-work-type{padding:12px;border:1px solid var(--line);border-radius:6px;background:#fafafa;}
+.stats-work-type span{display:block;color:#737373;font-size:11px;margin-bottom:4px;}
+.stats-work-type b{font-size:18px;}
+.stats-empty{color:#737373;font-size:12px;line-height:1.5;}
+.stats-topbar{padding:14px 16px 4px;}
+.stats-topbar-title{font-size:20px;font-weight:700;}
+.stats-topbar-subtitle{font-size:12px;color:#737373;margin-top:3px;}
+.bottom-nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:1fr 1fr;gap:0;padding:7px 10px calc(7px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:rgba(255,255,255,.97);backdrop-filter:blur(10px);z-index:20;}
+.bottom-nav button{border:0;background:none;color:#8a8a8a;padding:10px 4px;font-size:12px;font-weight:500;cursor:pointer;min-height:40px;}
+.bottom-nav button.active{color:#171717;font-weight:700;}
+#app{padding-bottom:86px;}
+
+/* v0.16 UX polish */
+.touch-action{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;}
+.day-delete,.break-delete,.photo-remove-x{min-width:44px;min-height:44px;padding:8px;}
+.day-quick-btn,.quick-day-btn,.add-day-btn,.day-save-btn,.add-job-btn,.notice-btn,.primary-btn,.confirm-yes,.confirm-no{min-height:44px;}
+.confirm-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.28);display:flex;align-items:flex-end;justify-content:center;padding:16px;z-index:100;}
+.confirm-modal{width:min(480px,100%);background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.16);}
+.confirm-modal-title{font-size:17px;font-weight:700;color:var(--ink);}
+.confirm-modal-text{margin-top:7px;color:var(--ink-soft);font-size:13px;line-height:1.5;}
+.confirm-modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;}
+.toast{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#171717;color:#fff;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;z-index:110;box-shadow:0 6px 22px rgba(0,0,0,.18);}
+@media (min-width:600px){.confirm-modal-overlay{align-items:center;}.confirm-modal{border-radius:12px;}}
 </style>
 </head>
 <body>
@@ -264,7 +311,7 @@ a{color:#171717!important}
   "use strict";
 
   var jobs = [];
-  var view = 'list';        // 'list' | 'add' | 'detail'
+  var view = 'list';        // 'list' | 'stats' | 'add' | 'detail'
   var currentJobId = null;
   var editingJob = false;
   var statusFilter = 'all'; // 'all' | 'active' | 'done'
@@ -273,16 +320,20 @@ a{color:#171717!important}
   var showImportPaste = false;
   var importError = null;
   var locationErrorText = null;
+  var dayDeleteConfirm = null;
+  var toastText = null;
+  var toastTimer = null;
 
   var CURRENCIES = ['BYN','EUR','SEK','USD','PLN'];
-  var MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
   function pad2(n){ return (n<10?'0':'')+n; }
   function currentMonthKey(){
     var d = new Date();
     return d.getFullYear()+'-'+pad2(d.getMonth()+1);
   }
-  var summaryMonth = currentMonthKey();
+  var statsMonth = currentMonthKey();
+  var statsCurrency = null;
 
   // ---------- utils ----------
   function esc(s){
@@ -294,9 +345,9 @@ a{color:#171717!important}
   function uid(prefix){ return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
   function pluralDays(n){
     var n10=n%10, n100=n%100;
-    if(n10===1 && n100!==11) return 'день';
-    if(n10>=2 && n10<=4 && !(n100>=12&&n100<=14)) return 'дня';
-    return 'дней';
+    if(n10===1 && n100!==11) return 'day';
+    if(n10>=2 && n10<=4 && !(n100>=12&&n100<=14)) return 'days';
+    return 'days';
   }
   function toMin(t){ var p=t.split(':'); return (+p[0])*60+(+p[1]); }
   function computeDayMinutes(day){
@@ -323,10 +374,10 @@ a{color:#171717!important}
   }
   function formatMin(min){
     var h=Math.floor(min/60), m=min%60;
-    if(h===0 && m===0) return '0 мин';
-    if(h===0) return m+' мин';
-    if(m===0) return h+' ч';
-    return h+' ч '+m+' мин';
+    if(h===0 && m===0) return '0 min';
+    if(h===0) return m+' min';
+    if(m===0) return h+' h';
+    return h+' h '+m+' min';
   }
   function dayHoursLabel(day){
     if(!day.start || !day.end) return '—';
@@ -369,11 +420,11 @@ a{color:#171717!important}
     return Math.max(0, (Number(job.fixedAmount)||0) - advanceAmount(job));
   }
   function paymentLine(job){
-    if(job.paymentType==='hourly') return 'Почасовая — ' + (job.rate||0) + ' ' + job.currency + '/ч';
+    if(job.paymentType==='hourly') return 'Hourly — ' + (job.rate||0) + ' ' + job.currency + '/h';
     var total = formatMoney(job.fixedAmount||0, job.currency);
     var adv = advanceAmount(job);
-    if(adv>0) return 'Фиксированная — ' + total + ' · Аванс ' + formatMoney(adv, job.currency) + ' · Остаток ' + formatMoney(remainingAmount(job), job.currency);
-    return 'Фиксированная — ' + total;
+    if(adv>0) return 'Fixed — ' + total + ' · Advance ' + formatMoney(adv, job.currency) + (job.advanceReceived===true ? ' · Received' : ' · Not received') + ' · Remaining ' + formatMoney(remainingAmount(job), job.currency);
+    return 'Fixed — ' + total;
   }
   function currencySelect(selected){
     return '<select name="currency">' + CURRENCIES.map(function(c){
@@ -406,7 +457,7 @@ a{color:#171717!important}
         });
       } else if(job.advanceReceived===true){
         // Fixed-price jobs contribute only money that was actually received.
-        // The month is determined by the date when "Аванс получен" was checked.
+        // The month is determined by the date when "Advance received" was checked.
         var receivedMonth = null;
         if(job.advanceReceivedAt){
           receivedMonth = new Date(job.advanceReceivedAt).getFullYear()+'-'+pad2(new Date(job.advanceReceivedAt).getMonth()+1);
@@ -465,6 +516,7 @@ a{color:#171717!important}
       var day = job.days.find(function(d){ return d.id===dayId; });
       if(!day.photos) day.photos = [];
       day.photos.push(dataUrl);
+      showToast('Photo added');
       render();
     }).catch(function(e){
       console.error(e);
@@ -474,6 +526,7 @@ a{color:#171717!important}
     var job = jobs.find(function(j){ return j.id===jobId; });
     var day = job.days.find(function(d){ return d.id===dayId; });
     day.photos.splice(index,1);
+    showToast('Photo removed');
     render();
   }
 
@@ -519,7 +572,7 @@ a{color:#171717!important}
   function saveDay(jobId, dayId){
     var job=jobs.find(function(j){return j.id===jobId;}); if(!job) return;
     var day=job.days.find(function(d){return d.id===dayId;}); if(!day) return;
-    normalizeDay(day); day.collapsed=true; render();
+    normalizeDay(day); day.collapsed=true; showToast('Work day saved'); render();
   }
   function openDay(jobId, dayId){
     var job=jobs.find(function(j){return j.id===jobId;}); if(!job) return;
@@ -590,8 +643,27 @@ a{color:#171717!important}
   }
   function deleteDay(jobId, dayId){
     var job = jobs.find(function(j){ return j.id===jobId; });
+    if(!job) return;
     job.days = job.days.filter(function(d){ return d.id!==dayId; });
+    dayDeleteConfirm = null;
+    showToast('Work day deleted');
     render();
+  }
+  function showToast(message){
+    toastText = message;
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastText=null; render(); }, 1400);
+  }
+  function renderDayDeleteModal(){
+    if(!dayDeleteConfirm) return '';
+    return '<div class="confirm-modal-overlay" id="day-delete-modal" role="dialog" aria-modal="true" aria-labelledby="day-delete-title">'+
+      '<div class="confirm-modal">'+
+      '<div class="confirm-modal-title" id="day-delete-title">Delete this work day?</div>'+
+      '<div class="confirm-modal-text">The recorded time, breaks and photos for this day will be deleted. This action cannot be undone.</div>'+
+      '<div class="confirm-modal-actions">'+
+      '<button class="confirm-no" id="day-delete-cancel">Cancel</button>'+
+      '<button class="confirm-yes" id="day-delete-confirm">Delete day</button>'+
+      '</div></div></div>';
   }
   function toggleJobStatus(jobId){
     var job = jobs.find(function(j){ return j.id===jobId; });
@@ -616,7 +688,7 @@ a{color:#171717!important}
         err.className = 'field-error';
         field.appendChild(err);
       }
-      err.textContent = 'Укажите объект или локацию.';
+      err.textContent = 'Enter a location or work site.';
       return;
     }
     var customer1 = { name:(fd.get('cust1name')||'').trim(), phone:(fd.get('cust1phone')||'').trim() };
@@ -686,7 +758,7 @@ var currency = fd.get('currency') || 'BYN';
       importError = null;
       showImportPaste = false;
     } catch(e){
-      importError = 'Не удалось прочитать файл — убедитесь, что это резервная копия из этого приложения.';
+      importError = 'Could not read the file — make sure it is a backup created by this app.';
     }
     render();
   }
@@ -695,27 +767,133 @@ var currency = fd.get('currency') || 'BYN';
     if(!file) return;
     var reader = new FileReader();
     reader.onload = function(){ applyImportedJson(String(reader.result)); };
-    reader.onerror = function(){ importError = 'Не удалось прочитать файл.'; render(); };
+    reader.onerror = function(){ importError = 'Could not read the file.'; render(); };
     reader.readAsText(file);
   }
 
   // ---------- render ----------
+  function getMonthStats(monthKey){
+    var totals = computeMonthlyTotals();
+    var cur = totals[monthKey] || {hoursMin:0,pay:{}};
+    var workDays = {};
+    var hourlyJobs = {};
+    var fixedJobs = {};
+    jobs.forEach(function(job){
+      if(job.paymentType==='hourly'){
+        (job.days||[]).forEach(function(day){
+          if(!day.date || day.date.slice(0,7)!==monthKey) return;
+          var mins=computeDayMinutes(day);
+          if(mins<=0) return;
+          workDays[day.date]=true;
+          hourlyJobs[job.id]=true;
+        });
+      } else {
+        var receivedMonth=null;
+        if(job.advanceReceived===true){
+          if(job.advanceReceivedAt){
+            var d=new Date(job.advanceReceivedAt);
+            receivedMonth=d.getFullYear()+'-'+pad2(d.getMonth()+1);
+          } else {
+            var dated=(job.days||[]).filter(function(d){return !!d.date;}).map(function(d){return d.date;}).sort();
+            if(dated.length) receivedMonth=dated[dated.length-1].slice(0,7);
+          }
+        }
+        if(receivedMonth===monthKey) fixedJobs[job.id]=true;
+        (job.days||[]).forEach(function(day){
+          if(day.date && day.date.slice(0,7)===monthKey && computeDayMinutes(day)>0) workDays[day.date]=true;
+        });
+      }
+    });
+    var currencyKeys=Object.keys(cur.pay).sort();
+    return {
+      hoursMin:cur.hoursMin||0,
+      workDays:Object.keys(workDays).length,
+      pay:cur.pay||{},
+      hourlyCount:Object.keys(hourlyJobs).length,
+      fixedCount:Object.keys(fixedJobs).length,
+      currencies:currencyKeys
+    };
+  }
+  function getLastMonths(anchor,count){
+    var arr=[];
+    for(var i=count-1;i>=0;i--) arr.push(monthAdd(anchor,-i));
+    return arr;
+  }
+  function formatHoursCompact(min){
+    var h=Math.floor(min/60), m=min%60;
+    if(m===0) return h+' h';
+    return h+' h '+m+' min';
+  }
+  function statsCurrencies(months){
+    var set={};
+    var totals=computeMonthlyTotals();
+    months.forEach(function(m){ Object.keys((totals[m]||{}).pay||{}).forEach(function(c){set[c]=true;}); });
+    return Object.keys(set).sort();
+  }
+  function renderStatsView(){
+    var s=getMonthStats(statsMonth);
+    var months=getLastMonths(statsMonth,6);
+    var totals=computeMonthlyTotals();
+    var currencies=statsCurrencies(months);
+    if(!statsCurrency || currencies.indexOf(statsCurrency)<0) statsCurrency=currencies[0]||null;
+    var html='';
+    html+='<div class="stats-topbar"><div class="stats-topbar-title">Statistics</div><div class="stats-topbar-subtitle">Income & Work Time</div></div>';
+    html+='<div class="stats-month-nav"><button class="stats-nav-btn" id="stats-prev">‹</button><span class="stats-month-label">'+monthLabel(statsMonth)+'</span><button class="stats-nav-btn" id="stats-next">›</button></div>';
+    html+='<div class="stats-panel">';
+    html+='<div class="stats-section"><div class="stats-section-title">Time</div><div class="stats-kpis">';
+    html+='<div class="stats-kpi"><span>Worked</span><b>'+formatMin(s.hoursMin)+'</b></div>';
+    html+='<div class="stats-kpi"><span>Working days</span><b>'+s.workDays+'</b></div>';
+    html+='</div>';
+    var avg=s.workDays?Math.round(s.hoursMin/s.workDays):0;
+    html+='<div style="margin-top:8px;color:#737373;font-size:12px;">Average per working day: <b style="color:#171717;">'+formatMin(avg)+'</b></div></div>';
+    html+='<div class="stats-section"><div class="stats-section-title">Received</div>';
+    if(Object.keys(s.pay).length){
+      html+='<div class="stats-money-list">'+Object.keys(s.pay).sort().map(function(c){return '<div class="stats-money-row"><span>'+c+'</span><b>'+formatMoney(s.pay[c],c)+'</b></div>';}).join('')+'</div>';
+    } else html+='<div class="stats-empty">No actual payments received this month yet.</div>';
+    html+='</div>';
+    html+='<div class="stats-section"><div class="stats-section-title">Received by month</div>';
+    if(currencies.length){
+      html+='<div class="stats-currency-tabs">'+currencies.map(function(c){return '<button class="stats-currency-btn '+(statsCurrency===c?'active':'')+'" data-currency="'+c+'">'+c+'</button>';}).join('')+'</div>';
+      var vals=months.map(function(m){return Number(((totals[m]||{}).pay||{})[statsCurrency]||0);});
+      var max=Math.max.apply(Math,vals.concat([0]));
+      html+='<div class="stats-chart">'+months.map(function(m,i){var v=vals[i];var pct=max?Math.max(2,v/max*100):0;return '<div class="stats-chart-row"><span class="stats-chart-label">'+MONTH_NAMES[+m.slice(5)-1].slice(0,3)+'</span><div class="stats-bar-wrap"><div class="stats-bar" style="width:'+pct+'%"></div></div><span class="stats-chart-value">'+formatMoney(v,statsCurrency)+'</span></div>';}).join('')+'</div>';
+    } else html+='<div class="stats-empty">Not enough data for the income chart.</div>';
+    html+='</div>';
+    html+='<div class="stats-section"><div class="stats-section-title">Worked by month</div>';
+    var hourVals=months.map(function(m){return (totals[m]||{}).hoursMin||0;});
+    var maxH=Math.max.apply(Math,hourVals.concat([0]));
+    html+='<div class="stats-chart">'+months.map(function(m,i){var v=hourVals[i];var pct=maxH?Math.max(2,v/maxH*100):0;return '<div class="stats-chart-row"><span class="stats-chart-label">'+MONTH_NAMES[+m.slice(5)-1].slice(0,3)+'</span><div class="stats-bar-wrap"><div class="stats-bar" style="width:'+pct+'%"></div></div><span class="stats-chart-value">'+formatHoursCompact(v)+'</span></div>';}).join('')+'</div></div>';
+    html+='<div class="stats-section"><div class="stats-section-title">Work</div><div class="stats-work-types">';
+    html+='<div class="stats-work-type"><span>Hourly</span><b>'+s.hourlyCount+'</b></div>';
+    html+='<div class="stats-work-type"><span>Fixed</span><b>'+s.fixedCount+'</b></div>';
+    html+='</div></div>';
+    html+='</div>';
+    html+=renderBottomNav('stats');
+    return html;
+  }
+  function renderBottomNav(active){
+    var html='<nav class="bottom-nav" aria-label="Main navigation">';
+    html+='<button class="'+(active==='list'?'active':'')+'" data-nav="list">Work Orders</button>';
+    html+='<button class="'+(active==='stats'?'active':'')+'" data-nav="stats">Statistics</button>';
+    html+='</nav>'; return html;
+  }
+
   function renderStorageNotice(){
     var html = '<div class="storage-notice">';
     if(localStorageOk){
-      html += 'Данные автоматически сохраняются в этом браузере. «Экспорт» — для резервной копии или переноса на другое устройство.';
+      html += 'Data is saved automatically in this browser. “Export” is for backup or moving your data to another device.';
     } else {
-      html += 'Автосохранение в память браузера здесь недоступно — данные хранятся, пока открыта эта вкладка. Периодически нажимайте «Экспорт» и сохраняйте файл, а при следующем открытии загружайте его через «Импорт».';
+      html += 'Automatic browser storage is unavailable here — data is kept only while this tab is open. Periodically use “Export” and save the file, then load it with “Import” next time.';
     }
     html += '<div class="storage-actions">';
-    html += '<button class="notice-btn" id="export-btn">Экспорт данных</button>';
-    html += '<label class="notice-btn" style="cursor:pointer;">Импорт из файла<input type="file" id="import-file-input" accept="application/json,.json" hidden></label>';
+    html += '<button class="notice-btn" id="export-btn">Export data</button>';
+    html += '<label class="notice-btn" style="cursor:pointer;">Import from file<input type="file" id="import-file-input" accept="application/json,.json" hidden></label>';
     html += '</div>';
-    html += '<button class="link-btn" id="toggle-import-paste" style="margin-top:8px;">'+(showImportPaste?'Скрыть поле вставки':'Или вставить текст резервной копии')+'</button>';
+    html += '<button class="link-btn" id="toggle-import-paste" style="margin-top:8px;">'+(showImportPaste?'Hide paste field':'Or paste backup text')+'</button>';
     if(showImportPaste){
       html += '<div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">';
-      html += '<textarea id="import-paste-area" placeholder="Вставьте сюда содержимое резервного файла"></textarea>';
-      html += '<button class="notice-btn" id="import-paste-btn">Загрузить из текста</button>';
+      html += '<textarea id="import-paste-area" placeholder="Paste backup contents here"></textarea>';
+      html += '<button class="notice-btn" id="import-paste-btn">Load from text</button>';
       html += '</div>';
     }
     if(importError) html += '<div class="import-error">'+esc(importError)+'</div>';
@@ -726,49 +904,45 @@ var currency = fd.get('currency') || 'BYN';
     if(exportModalText===null) return '';
     var html = '<div class="modal-overlay" id="export-modal-overlay">';
     html += '<div class="modal-box">';
-    html += '<div class="modal-title">Резервная копия данных</div>';
-    html += '<div class="modal-hint">Если скачивание файла не началось автоматически — выделите текст ниже и сохраните его (например, в заметки), чтобы восстановить данные позже через «Импорт».</div>';
+    html += '<div class="modal-title">Data backup</div>';
+    html += '<div class="modal-hint">If the download did not start automatically, select the text below and save it (for example, in Notes) to restore the data later using “Import”.</div>';
     html += '<textarea id="export-textarea" readonly>'+esc(exportModalText)+'</textarea>';
-    html += '<div class="modal-row"><button class="notice-btn" id="select-export-text">Выделить всё</button>';
-    html += '<button class="primary-btn" style="flex:1;margin-top:0;" id="close-export-modal">Закрыть</button></div>';
+    html += '<div class="modal-row"><button class="notice-btn" id="select-export-text">Select all</button>';
+    html += '<button class="primary-btn" style="flex:1;margin-top:0;" id="close-export-modal">Close</button></div>';
     html += '</div></div>';
     return html;
   }
   function renderSummaryPanel(){
     var totals = computeMonthlyTotals();
-    var cur = totals[summaryMonth] || {hoursMin:0, pay:{}, advance:{}};
+    var month = currentMonthKey();
+    var cur = totals[month] || {hoursMin:0, pay:{}};
     var html = '';
     html += '<div class="summary-panel">';
-    html += '<div class="summary-header"><button class="summary-nav" id="summary-prev">‹</button>';
-    html += '<span class="summary-month-label">Сводка · '+monthLabel(summaryMonth)+'</span>';
-    html += '<button class="summary-nav" id="summary-next">›</button></div>';
+    html += '<div class="summary-header"><span class="summary-month-label">Summary · '+monthLabel(month)+'</span></div>';
     html += '<div class="summary-body">';
-    html += '<div class="summary-stat"><span>Часов отработано</span><b>'+formatMin(cur.hoursMin)+'</b></div>';
-    html += '<div class="summary-stat"><span>Получено</span><b>'+payMapToString(cur.pay)+'</b></div>';
-    if(Object.keys(cur.advance||{}).length){
-      html += '<div class="summary-stat summary-stat-advance"><span>Аванс получен</span><b>'+payMapToString(cur.advance)+'</b></div>';
-    }
+    html += '<div class="summary-stat"><span>Hours worked</span><b>'+formatMin(cur.hoursMin)+'</b></div>';
+    html += '<div class="summary-stat"><span>Received</span><b>'+payMapToString(cur.pay)+'</b></div>';
     html += '</div></div>';
     return html;
   }
   function renderListView(){
     var html = '';
     html += '<div class="home-header">';
-    html += '<div class="home-title">Наряды</div>';
-    html += '<div class="home-subtitle">Учёт объектов, времени и оплаты</div>';
+    html += '<div class="home-title">Work Orders</div>';
+    html += '<div class="home-subtitle">Track work sites, time and payments</div>';
     html += '</div>';
     html += renderSummaryPanel();
     html += '<div class="status-tabs">';
-    html += '<button class="tab-btn '+(statusFilter==='all'?'active':'')+'" data-filter="all">Все</button>';
-    html += '<button class="tab-btn '+(statusFilter==='active'?'active':'')+'" data-filter="active">В работе</button>';
-    html += '<button class="tab-btn '+(statusFilter==='done'?'active':'')+'" data-filter="done">Завершены</button>';
+    html += '<button class="tab-btn '+(statusFilter==='all'?'active':'')+'" data-filter="all">All</button>';
+    html += '<button class="tab-btn '+(statusFilter==='active'?'active':'')+'" data-filter="active">Active</button>';
+    html += '<button class="tab-btn '+(statusFilter==='done'?'active':'')+'" data-filter="done">Completed</button>';
     html += '</div>';
-    html += '<button class="add-job-btn" id="add-job-btn">+ Добавить наряд</button>';
+    html += '<button class="add-job-btn" id="add-job-btn">+ Add work order</button>';
     var list = filteredJobs();
     if(list.length===0){
       html += '<div class="empty-state">'+(jobs.length===0
-        ? 'Пока нет ни одного наряда.<br>Добавьте первый, чтобы начать вести учёт времени и оплаты по объектам.'
-        : 'В этой категории пока пусто.')+'</div>';
+        ? 'No work orders yet.<br>Add your first one to start tracking time and payments by work site.'
+        : 'This category is empty.')+'</div>';
     } else {
       html += '<div class="job-list">';
       list.forEach(function(job){
@@ -778,8 +952,8 @@ var currency = fd.get('currency') || 'BYN';
         html += '<div class="job-card-top">';
         html += '<div class="job-location">'+esc(job.location)+'</div>';
         html += '<div class="job-badges">';
-        html += '<div class="job-badge badge-'+job.paymentType+'">'+(job.paymentType==='hourly'?'Почасовая':'Фиксированная')+'</div>';
-        if(isDone) html += '<div class="job-badge badge-done">Завершён</div>';
+        html += '<div class="job-badge badge-'+job.paymentType+'">'+(job.paymentType==='hourly'?'Hourly':'Fixed')+'</div>';
+        if(isDone) html += '<div class="job-badge badge-done">Completed</div>';
         html += '</div></div>';
         html += '<div class="job-customer">'+esc(job.customer1.name||'—')+(job.customer1.phone?' · '+esc(job.customer1.phone):'')+'</div>';
         if(job.customer2){
@@ -793,77 +967,78 @@ var currency = fd.get('currency') || 'BYN';
       html += '</div>';
     }
     html += renderStorageNotice();
+    html += renderBottomNav('list');
     return html;
   }
   function renderFormView(existingJob){
     var isEdit = !!existingJob;
     var j = existingJob || {location:'',customer1:{name:'',phone:''},customer2:null,paymentType:'hourly',rate:'',fixedAmount:'',advanceEnabled:false,advanceType:'amount',advanceValue:'',advanceReceived:false,advanceReceivedAt:null,currency:'BYN'};
     var html = '';
-    html += '<div class="topbar"><button class="back-btn" id="cancel-form-btn">‹ Назад</button>';
-    html += '<div class="topbar-title">'+(isEdit?'Изменить наряд':'Новый наряд')+'</div><div style="width:56px"></div></div>';
+    html += '<div class="topbar"><button class="back-btn" id="cancel-form-btn">‹ Back</button>';
+    html += '<div class="topbar-title">'+(isEdit?'Edit work order':'New work order')+'</div><div style="width:56px"></div></div>';
     html += '<form id="job-form" class="form-body">';
-    html += '<label class="field"><span class="field-label">Объект / локация</span>';
-    html += '<input type="text" name="location" required placeholder="напр. ул. Ленина 12" value="'+esc(j.location)+'"></label>';
+    html += '<label class="field"><span class="field-label">Work site / location</span>';
+    html += '<input type="text" name="location" required placeholder="e.g. Main Street 12" value="'+esc(j.location)+'"></label>';
 
-    html += '<div class="field-group"><span class="field-group-title">Заказчик 1</span>';
-    html += '<label class="field"><span class="field-label">Имя</span><input type="text" name="cust1name" value="'+esc(j.customer1.name)+'" placeholder="Имя"></label>';
-    html += '<label class="field"><span class="field-label">Телефон</span><input type="tel" name="cust1phone" value="'+esc(j.customer1.phone)+'" placeholder="+375 29 000-00-00"></label>';
+    html += '<div class="field-group"><span class="field-group-title">Customer 1</span>';
+    html += '<label class="field"><span class="field-label">Name</span><input type="text" name="cust1name" value="'+esc(j.customer1.name)+'" placeholder="Name"></label>';
+    html += '<label class="field"><span class="field-label">Phone</span><input type="tel" name="cust1phone" value="'+esc(j.customer1.phone)+'" placeholder="+375 29 000-00-00"></label>';
     html += '</div>';
 
-    html += '<button type="button" id="toggle-cust2" class="link-btn">'+(j.customer2?'✕ Убрать второго заказчика':'+ Добавить второго заказчика')+'</button>';
+    html += '<button type="button" id="toggle-cust2" class="link-btn">'+(j.customer2?'✕ Remove second customer':'+ Add second customer')+'</button>';
     html += '<div class="field-group" id="cust2-fields" style="display:'+(j.customer2?'flex':'none')+'">';
-    html += '<span class="field-group-title">Заказчик 2</span>';
-    html += '<label class="field"><span class="field-label">Имя</span><input type="text" name="cust2name" value="'+esc(j.customer2?j.customer2.name:'')+'" placeholder="Имя"></label>';
-    html += '<label class="field"><span class="field-label">Телефон</span><input type="tel" name="cust2phone" value="'+esc(j.customer2?j.customer2.phone:'')+'" placeholder="+375 29 000-00-00"></label>';
+    html += '<span class="field-group-title">Customer 2</span>';
+    html += '<label class="field"><span class="field-label">Name</span><input type="text" name="cust2name" value="'+esc(j.customer2?j.customer2.name:'')+'" placeholder="Name"></label>';
+    html += '<label class="field"><span class="field-label">Phone</span><input type="tel" name="cust2phone" value="'+esc(j.customer2?j.customer2.phone:'')+'" placeholder="+375 29 000-00-00"></label>';
     html += '</div>';
 
-    html += '<div class="field-group"><span class="field-group-title">Способ оплаты</span>';
+    html += '<div class="field-group"><span class="field-group-title">Payment type</span>';
     html += '<div class="payment-toggle">';
-    html += '<label class="toggle-option '+(j.paymentType==='hourly'?'active':'')+'"><input type="radio" name="paymentType" value="hourly" '+(j.paymentType==='hourly'?'checked':'')+'><span>Почасовая</span></label>';
-    html += '<label class="toggle-option '+(j.paymentType==='fixed'?'active':'')+'"><input type="radio" name="paymentType" value="fixed" '+(j.paymentType==='fixed'?'checked':'')+'><span>Фиксированная</span></label>';
+    html += '<label class="toggle-option '+(j.paymentType==='hourly'?'active':'')+'"><input type="radio" name="paymentType" value="hourly" '+(j.paymentType==='hourly'?'checked':'')+'><span>Hourly</span></label>';
+    html += '<label class="toggle-option '+(j.paymentType==='fixed'?'active':'')+'"><input type="radio" name="paymentType" value="fixed" '+(j.paymentType==='fixed'?'checked':'')+'><span>Fixed</span></label>';
     html += '</div>';
     html += '<div class="rate-row">';
     html += '<div id="hourly-fields" style="display:'+(j.paymentType==='hourly'?'block':'none')+';flex:1">';
-    html += '<label class="field"><span class="field-label">Ставка в час</span><input type="number" step="0.01" min="0" name="rate" value="'+(j.rate||'')+'" placeholder="0"></label></div>';
+    html += '<label class="field"><span class="field-label">Hourly rate</span><input type="number" step="0.01" min="0" name="rate" value="'+(j.rate||'')+'" placeholder="0"></label></div>';
     html += '<div id="fixed-fields" style="display:'+(j.paymentType==='fixed'?'block':'none')+';flex:1">';
-    html += '<label class="field"><span class="field-label">Сумма</span><input type="number" step="0.01" min="0" name="fixedAmount" value="'+(j.fixedAmount||'')+'" placeholder="0"></label>';
+    html += '<label class="field"><span class="field-label">Amount</span><input type="number" step="0.01" min="0" name="fixedAmount" value="'+(j.fixedAmount||'')+'" placeholder="0"></label>';
     html += '<div class="advance-box">';
-    html += '<label class="check-row"><input type="checkbox" id="advance-enabled" '+((j.advanceEnabled===true || (j.advanceEnabled===undefined && (Number(j.advanceValue)||0)>0))?'checked':'')+'> <span>Аванс</span></label>';
+    html += '<label class="check-row"><input type="checkbox" id="advance-enabled" '+((j.advanceEnabled===true || (j.advanceEnabled===undefined && (Number(j.advanceValue)||0)>0))?'checked':'')+'> <span>Advance</span></label>';
     html += '<div id="advance-fields" style="display:'+((j.advanceEnabled===true || (j.advanceEnabled===undefined && (Number(j.advanceValue)||0)>0))?'block':'none')+'">';
     html += '<div class="advance-row">';
     html += '<select name="advanceType" id="advance-type">';
-    html += '<option value="amount" '+((j.advanceType||'amount')==='amount'?'selected':'')+'>Сумма</option>';
-    html += '<option value="percent" '+((j.advanceType||'amount')==='percent'?'selected':'')+'>Процент</option>';
+    html += '<option value="amount" '+((j.advanceType||'amount')==='amount'?'selected':'')+'>Amount</option>';
+    html += '<option value="percent" '+((j.advanceType||'amount')==='percent'?'selected':'')+'>Percent</option>';
     html += '</select>';
     html += '<input type="number" step="0.01" min="0" name="advanceValue" id="advance-value" value="'+(j.advanceValue||'')+'" placeholder="0">';
     html += '</div>';
     html += '<div id="advance-preview" class="advance-preview"></div>';
 html += '<label class="check-row" style="margin-top:10px;">';
 html += '<input type="checkbox" id="advance-received" '+(j.advanceReceived===true?'checked':'')+'>';
-html += '<span>Аванс получен</span>';
+html += '<span>Advance received</span>';
 html += '</label>';
 
 html += '</div></div></div>';
-    html += '<label class="field" style="width:96px"><span class="field-label">Валюта</span>'+currencySelect(j.currency)+'</label>';
+    html += '<label class="field" style="width:96px"><span class="field-label">Currency</span>'+currencySelect(j.currency)+'</label>';
     html += '</div></div>';
 
-    html += '<button type="submit" class="primary-btn">'+(isEdit?'Сохранить изменения':'Создать наряд')+'</button>';
+    html += '<button type="submit" class="primary-btn">'+(isEdit?'Save changes':'Create work order')+'</button>';
     html += '</form>';
     return html;
   }
   function photoTileHtml(jobId, dayId, index, dataUrl){
-    return '<div class="photo-tile"><img src="'+dataUrl+'" alt="Фото дня">'+
-      '<button class="photo-remove-x" data-job="'+jobId+'" data-day="'+dayId+'" data-index="'+index+'" title="Удалить фото">✕</button></div>';
+    return '<div class="photo-tile"><img src="'+dataUrl+'" alt="Day photos">'+
+      '<button class="photo-remove-x" data-job="'+jobId+'" data-day="'+dayId+'" data-index="'+index+'" title="Remove photo" aria-label="Remove photo">✕</button></div>';
   }
   function renderDetailView(job){
     var t = jobTotals(job);
     var isDone = job.status==='done';
     var html = '';
-    html += '<div class="topbar"><button class="back-btn" id="back-btn">‹ Назад</button>';
-    html += '<div class="topbar-title">Наряд</div><div style="width:56px"></div></div>';
+    html += '<div class="topbar"><button class="back-btn" id="back-btn">‹ Back</button>';
+    html += '<div class="topbar-title">Work order</div><div style="width:56px"></div></div>';
     html += '<div class="detail-info">';
     html += '<div class="detail-title-row"><div class="detail-title">'+esc(job.location)+'</div>';
-    if(isDone) html += '<div class="job-badge badge-done">Завершён</div>';
+    if(isDone) html += '<div class="job-badge badge-done">Completed</div>';
     html += '</div>';
     html += '<div class="detail-row">'+esc(job.customer1.name||'—')+(job.customer1.phone?' · <a href="tel:'+esc(job.customer1.phone)+'">'+esc(job.customer1.phone)+'</a>':'')+'</div>';
     if(job.customer2){
@@ -871,21 +1046,21 @@ html += '</div></div></div>';
     }
     html += '<div class="detail-payment">'+paymentLine(job)+'</div>';
     html += '<div class="detail-actions">';
-    html += '<button class="edit-link" id="edit-job-btn">Изменить</button>';
-    html += '<button class="status-link" id="toggle-status-btn">'+(isDone?'Вернуть в работу':'Отметить как завершённый')+'</button>';
+    html += '<button class="edit-link" id="edit-job-btn">Edit</button>';
+    html += '<button class="status-link" id="toggle-status-btn">'+(isDone?'Return to active':'Mark as completed')+'</button>';
     if(confirmDeleteJobId===job.id){
-      html += '<span style="font-size:13px;color:var(--ink-soft);">Точно удалить?</span>';
-      html += '<button class="confirm-yes" id="confirm-delete-yes">Да, удалить</button>';
-      html += '<button class="confirm-no" id="confirm-delete-no">Отмена</button>';
+      html += '<div style="font-size:13px;color:var(--ink-soft);max-width:240px;line-height:1.4;">Delete this work order and all recorded days, time and payment information?</div>';
+      html += '<button class="confirm-yes" id="confirm-delete-yes">Yes, delete</button>';
+      html += '<button class="confirm-no" id="confirm-delete-no">Cancel</button>';
     } else {
-      html += '<button class="delete-link" id="delete-job-btn">Удалить наряд</button>';
+      html += '<button class="delete-link" id="delete-job-btn">Delete work order</button>';
     }
     html += '</div>';
     html += '</div>';
 
-    html += '<div class="ledger-header"><span class="ledger-title">Дни работы</span></div>';
+    html += '<div class="ledger-header"><span class="ledger-title">Work days</span></div>';
     html += '<div class="ledger-summary"><span>'+job.days.length+' '+pluralDays(job.days.length)+' · <b>'+formatMin(t.totalMin)+'</b></span>';
-   html += '<span>К оплате: <b>'+formatMoney(t.payable, job.currency)+'</b></span></div>';
+   html += '<span>Amount due: <b>'+formatMoney(t.payable, job.currency)+'</b></span></div>';
 
     job.days.forEach(function(day){
       if(!day.date) return;
@@ -895,41 +1070,41 @@ html += '</div></div></div>';
       html += '<div class="day-row'+(day.collapsed?' day-row-collapsed':'')+'">';
       html += '<div class="day-row-top">';
       html += '<input type="date" class="day-date-input" value="'+esc(day.date)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-field="date"'+(day.collapsed?' disabled':'')+'>';
-      html += '<span class="day-hours">'+hours+' ч '+rem+' мин</span>';
-      if(day.collapsed) html += '<button class="day-open-btn" data-action="open-day" data-job="'+job.id+'" data-day="'+day.id+'">Открыть</button>';
-      html += '<button class="day-delete" data-job="'+job.id+'" data-day="'+day.id+'" title="Удалить день">✕</button>';
+      html += '<span class="day-hours">'+hours+' h '+rem+' min</span>';
+      if(day.collapsed) html += '<button class="day-open-btn" data-action="open-day" data-job="'+job.id+'" data-day="'+day.id+'">Open</button>';
+      html += '<button class="day-delete" data-job="'+job.id+'" data-day="'+day.id+'" title="Delete day" aria-label="Delete day">✕</button>';
       html += '</div>';
       if(!day.collapsed){
         html += '<div class="day-times-grid">';
-        html += '<label><span class="field-label">Начало</span><input type="time" value="'+esc(day.start)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-field="start"></label>';
-        html += '<label><span class="field-label">Конец</span><input type="time" value="'+esc(day.end)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-field="end"></label>';
+        html += '<label><span class="field-label">Start</span><input type="time" value="'+esc(day.start)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-field="start"></label>';
+        html += '<label><span class="field-label">End</span><input type="time" value="'+esc(day.end)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-field="end"></label>';
         html += '</div>';
         html += '<div class="break-list">';
         (day.breaks||[]).forEach(function(br){
-          html += '<div class="break-row"><span class="break-type">'+(br.type==='lunch'?'Обед':'Перерыв')+'</span>';
+          html += '<div class="break-row"><span class="break-type">'+(br.type==='lunch'?'Lunch':'Break')+'</span>';
           html += '<input type="time" value="'+esc(br.start)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+br.id+'" data-break-field="start"><span>—</span>';
           html += '<input type="time" value="'+esc(br.end)+'" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+br.id+'" data-break-field="end">';
-          html += '<button class="break-delete" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+br.id+'" title="Удалить перерыв">✕</button></div>';
+          html += '<button class="break-delete" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+br.id+'" title="Delete break" aria-label="Delete break">✕</button></div>';
         });
         html += '</div>';
         html += '<div class="day-quick-actions">';
-        if(!day.start) html += '<button class="day-quick-btn primary" data-action="start" data-job="'+job.id+'" data-day="'+day.id+'">▶ Начать</button>';
-        if(day.start && !day.end) html += '<button class="day-quick-btn primary" data-action="end" data-job="'+job.id+'" data-day="'+day.id+'">■ Закончить</button>';
-        html += '<button class="day-quick-btn break" data-action="add-break" data-job="'+job.id+'" data-day="'+day.id+'">+ Перерыв</button>';
-        html += '<button class="day-quick-btn break" data-action="add-lunch" data-job="'+job.id+'" data-day="'+day.id+'">+ Обед</button>';
+        if(!day.start) html += '<button class="day-quick-btn primary" data-action="start" data-job="'+job.id+'" data-day="'+day.id+'">▶ Start</button>';
+        if(day.start && !day.end) html += '<button class="day-quick-btn primary" data-action="end" data-job="'+job.id+'" data-day="'+day.id+'">■ Finish</button>';
+        html += '<button class="day-quick-btn break" data-action="add-break" data-job="'+job.id+'" data-day="'+day.id+'">+ Break</button>';
+        html += '<button class="day-quick-btn break" data-action="add-lunch" data-job="'+job.id+'" data-day="'+day.id+'">+ Lunch</button>';
         var openBreak=(day.breaks||[]).find(function(b){return b.start&&!b.end;});
-        if(openBreak) html += '<button class="day-quick-btn primary" data-action="finish-break" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+openBreak.id+'">Продолжить работу</button>';
+        if(openBreak) html += '<button class="day-quick-btn primary" data-action="finish-break" data-job="'+job.id+'" data-day="'+day.id+'" data-break="'+openBreak.id+'">Resume work</button>';
         html += '</div>';
         html += '<div class="day-photos-row">';
         (day.photos||[]).forEach(function(dataUrl,idx){ html += photoTileHtml(job.id,day.id,idx,dataUrl); });
-        html += '<label class="photo-add-tile" title="Добавить фото">+<input type="file" accept="image/*" class="photo-input" data-job="'+job.id+'" data-day="'+day.id+'" hidden></label></div>';
-        html += '<button class="day-save-btn" data-action="save-day" data-job="'+job.id+'" data-day="'+day.id+'">✓ Сохранить день</button>';
+        html += '<label class="photo-add-tile" title="Add photo">+<input type="file" accept="image/*" class="photo-input" data-job="'+job.id+'" data-day="'+day.id+'" hidden></label></div>';
+        html += '<button class="day-save-btn" data-action="save-day" data-job="'+job.id+'" data-day="'+day.id+'">✓ Save day</button>';
       }
       html += '</div>';
     });
     html += '<div class="day-actions">';
-    html += '<button class="quick-day-btn" id="add-today-btn">+ Сегодня</button>';
-    html += '<button class="add-day-btn" id="add-day-btn">+ Добавить другой день</button>';
+    html += '<button class="quick-day-btn" id="add-today-btn">+ Today</button>';
+    html += '<button class="add-day-btn" id="add-day-btn">+ Add another day</button>';
     html += '</div>';
     return html;
   }
@@ -958,7 +1133,8 @@ html += '</div></div></div>';
     persistToLocalStorage();
     var app = document.getElementById('app');
     var html;
-    if(view==='add'){ html = renderFormView(null); }
+    if(view==='stats'){ html = renderStatsView(); }
+    else if(view==='add'){ html = renderFormView(null); }
     else if(view==='detail'){
       var job = jobs.find(function(j){ return j.id===currentJobId; });
       if(!job){ view='list'; html = renderListView(); }
@@ -968,6 +1144,8 @@ html += '</div></div></div>';
       html = renderListView();
     }
     html += renderExportModal();
+    html += renderDayDeleteModal();
+    if(toastText) html += '<div class="toast" role="status">✓ '+esc(toastText)+'</div>';
     app.innerHTML = html;
     attachListeners();
   }
@@ -975,6 +1153,21 @@ html += '</div></div></div>';
   function attachListeners(){
     var addJobBtn = document.getElementById('add-job-btn');
     if(addJobBtn) addJobBtn.addEventListener('click', function(){ view='add'; render(); });
+
+    document.querySelectorAll('[data-nav]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var target=btn.getAttribute('data-nav');
+        if(target==='list'){ view='list'; currentJobId=null; editingJob=false; render(); }
+        else if(target==='stats'){ view='stats'; currentJobId=null; editingJob=false; render(); }
+      });
+    });
+    var statsPrev=document.getElementById('stats-prev');
+    if(statsPrev) statsPrev.addEventListener('click', function(){ statsMonth=monthAdd(statsMonth,-1); render(); });
+    var statsNext=document.getElementById('stats-next');
+    if(statsNext) statsNext.addEventListener('click', function(){ statsMonth=monthAdd(statsMonth,1); render(); });
+    document.querySelectorAll('[data-currency]').forEach(function(btn){
+      btn.addEventListener('click', function(){ statsCurrency=btn.getAttribute('data-currency'); render(); });
+    });
 
     var exportBtn = document.getElementById('export-btn');
     if(exportBtn) exportBtn.addEventListener('click', exportData);
@@ -990,11 +1183,6 @@ html += '</div></div></div>';
       var ta = document.getElementById('import-paste-area');
       applyImportedJson(ta.value);
     });
-
-    var summaryPrev = document.getElementById('summary-prev');
-    if(summaryPrev) summaryPrev.addEventListener('click', function(){ summaryMonth = monthAdd(summaryMonth,-1); render(); });
-    var summaryNext = document.getElementById('summary-next');
-    if(summaryNext) summaryNext.addEventListener('click', function(){ summaryMonth = monthAdd(summaryMonth,1); render(); });
 
     document.querySelectorAll('.tab-btn').forEach(function(btn){
       btn.addEventListener('click', function(){ statusFilter = btn.getAttribute('data-filter'); render(); });
@@ -1019,11 +1207,11 @@ html += '</div></div></div>';
       var showing = div.style.display !== 'none';
       if(showing){
         div.style.display='none';
-        toggleCust2.textContent='+ Добавить второго заказчика';
+        toggleCust2.textContent='+ Add second customer';
         div.querySelectorAll('input').forEach(function(i){ i.value=''; });
       } else {
         div.style.display='flex';
-        toggleCust2.textContent='✕ Убрать второго заказчика';
+        toggleCust2.textContent='✕ Remove second customer';
       }
     });
 
@@ -1052,10 +1240,10 @@ html += '</div></div></div>';
       var val = parseFloat(advanceValue && advanceValue.value) || 0;
       if(advanceType && advanceType.value==='percent'){
         val=Math.min(100,Math.max(0,val));
-        if(advancePreview) advancePreview.textContent='Аванс: '+formatMoney(total*val/100, (document.querySelector('select[name="currency"]')||{}).value || 'BYN')+' · Остаток: '+formatMoney(Math.max(0,total-total*val/100), (document.querySelector('select[name="currency"]')||{}).value || 'BYN');
+        if(advancePreview) advancePreview.textContent='Advance: '+formatMoney(total*val/100, (document.querySelector('select[name="currency"]')||{}).value || 'BYN')+' · Remaining: '+formatMoney(Math.max(0,total-total*val/100), (document.querySelector('select[name="currency"]')||{}).value || 'BYN');
       } else {
         val=Math.min(Math.max(0,total),Math.max(0,val));
-        if(advancePreview) advancePreview.textContent='Аванс: '+formatMoney(val, (document.querySelector('select[name="currency"]')||{}).value || 'BYN')+' · Остаток: '+formatMoney(Math.max(0,total-val), (document.querySelector('select[name="currency"]')||{}).value || 'BYN');
+        if(advancePreview) advancePreview.textContent='Advance: '+formatMoney(val, (document.querySelector('select[name="currency"]')||{}).value || 'BYN')+' · Remaining: '+formatMoney(Math.max(0,total-val), (document.querySelector('select[name="currency"]')||{}).value || 'BYN');
       }
     }
     if(advanceEnabled) advanceEnabled.addEventListener('change', updateAdvanceUI);
@@ -1136,9 +1324,18 @@ html += '</div></div></div>';
 
     document.querySelectorAll('.day-delete').forEach(function(btn){
       btn.addEventListener('click', function(){
-        deleteDay(btn.getAttribute('data-job'), btn.getAttribute('data-day'));
+        dayDeleteConfirm={jobId:btn.getAttribute('data-job'),dayId:btn.getAttribute('data-day')};
+        render();
       });
     });
+    var dayDeleteCancel=document.getElementById('day-delete-cancel');
+    if(dayDeleteCancel) dayDeleteCancel.addEventListener('click', function(){ dayDeleteConfirm=null; render(); });
+    var dayDeleteConfirmBtn=document.getElementById('day-delete-confirm');
+    if(dayDeleteConfirmBtn) dayDeleteConfirmBtn.addEventListener('click', function(){
+      if(dayDeleteConfirm) deleteDay(dayDeleteConfirm.jobId,dayDeleteConfirm.dayId);
+    });
+    var dayDeleteModal=document.getElementById('day-delete-modal');
+    if(dayDeleteModal) dayDeleteModal.addEventListener('click', function(e){ if(e.target===dayDeleteModal){ dayDeleteConfirm=null; render(); } });
 
     document.querySelectorAll('.photo-input').forEach(function(inp){
       inp.addEventListener('change', function(){
